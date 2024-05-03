@@ -14,4 +14,12 @@ User.statics.create = function(username, password) {
     const encrypted = crypto.createHash('sha1', config.secret)
                     .update(password)
                     .digest('base64')
+
+    const user = new this ({
+        username,
+        password: encrypted
+    })
+
+    // return the Promise 
+    return user.save()
 }
