@@ -11,7 +11,7 @@ const user = new Schema({
 
 // Create new user document 
 User.statics.create = function(username, password) {
-    const encrypted = crypto.createHash('sha1', config.secret)
+    const encrypted = crypto.createHmac('sha1', config.secret)
                     .update(password)
                     .digest('base64')
 
@@ -23,3 +23,27 @@ User.statics.create = function(username, password) {
     // return the Promise 
     return user.save()
 }
+
+// Find one user by using the username
+User.statics.findOneByUsername = function(username) {
+    return this.findOne({
+        username
+    }).exec()
+}
+
+// Verify the password of the user document
+User.method.verify = function(password) {
+    const encrypted = crypto.createHmac('sha1', config.secret)
+                    .update(password)
+                    .digest('base64')
+    console.log(this.password === encrypted)
+    
+    return this.password === encrypted
+}
+
+User.method.assignAdmin = function() {
+    this.admin = true
+    return this.save()
+}
+
+module.exports = mongoose.model('User', User)
